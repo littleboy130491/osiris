@@ -7,12 +7,15 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Forms\Components\TextInput;
 
 class EventsTable
 {
@@ -31,6 +34,10 @@ class EventsTable
                     ->label('Session')
                     ->url(fn($record) => route('filament.admin.resources.tracking-sessions.view', $record->tracking_session_id))
                     ->searchable()
+                    ->sortable(),
+
+                ToggleColumn::make('visitor.starred')
+                    ->label('Starred')
                     ->sortable(),
 
                 TextColumn::make('event_name')
@@ -77,6 +84,8 @@ class EventsTable
                     ->sortable(),
             ])
 ->filters([
+    TernaryFilter::make('Starred')
+                    ->relationship('visitor', 'starred'),
     // Event Type
     SelectFilter::make('event_name')
         ->label('Event Type')
@@ -157,8 +166,74 @@ class EventsTable
         
         }),
 
-  
-    // Date range filter (safe)
+        // Domain & Page Path
+
+                Filter::make('domain_path')
+                    ->form([
+                        // Domain selector
+                        Select::make('domain')
+                            ->options(function () {
+                                return \App\Models\Event::query()
+                                    ->pluck('url')
+                                    ->map(function ($url) {
+                                        if (empty($url)) {
+                                            return null;
+                                        }
+                                        $host = parse_url($url, PHP_URL_HOST);
+                                        // remove leading www.
+                                        if ($host) {
+                                            return Str::replaceFirst('www.', '', $host);
+                                        }
+                                        return null;
+                                    })
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->mapWithKeys(fn($d) => [$d => $d])
+                                    ->toArray();
+                            }),
+
+                        // Page path selector (without query string)
+                        Select::make('page_path')
+                            ->options(function () {
+                                return \App\Models\Event::query()
+                                    ->pluck('url')
+                                    ->map(function ($url) {
+                                        if (empty($url)) {
+                                            return null;
+                                        }
+                                        $path = parse_url($url, PHP_URL_PATH);
+                                        return $path ?: '/';
+                                    })
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->mapWithKeys(fn($p) => [$p => $p])
+                                    ->toArray();
+                            }),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (!empty($data['domain'])) {
+                            $query->whereRaw("
+                replace(
+                    substr(
+                        substr(url, instr(url, '//')+2),
+                        1,
+                        instr(substr(url, instr(url, '//')+2), '/')-1
+                    ),
+                'www.','') = ?
+            ", [$data['domain']]);
+                        }
+
+                        if (!empty($data['page_path'])) {
+                            $query->whereRaw("substr(url, instr(url, '://')+3) like ?", ['%' . $data['page_path'] . '%']);
+                        }
+
+                        return $query;
+                    }),
+
+
+                // Date range filter (safe)
     Filter::make('created_at')
         ->form([
             \Filament\Forms\Components\DatePicker::make('from'),
