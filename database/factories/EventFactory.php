@@ -29,30 +29,20 @@ class EventFactory extends Factory
 
         // build query_strings JSON from what’s set
         $queryStrings = [];
-        if ($gclid) {
+        if ($gclid)
             $queryStrings['gclid'] = $gclid;
-        }
-        if ($fbclid) {
+        if ($fbclid)
             $queryStrings['fbclid'] = $fbclid;
-        }
-        if ($utm_source) {
+        if ($utm_source)
             $queryStrings['utm_source'] = $utm_source;
-        }
-        if ($utm_medium) {
+        if ($utm_medium)
             $queryStrings['utm_medium'] = $utm_medium;
-        }
-        if ($utm_campaign) {
+        if ($utm_campaign)
             $queryStrings['utm_campaign'] = $utm_campaign;
-        }
-
-        // generate some fake visitor metadata
-        $userAgent = $this->faker->userAgent();
-        // parse device/browser/os could use some package, but for dummy, just split or store raw
-        // IP
-        $ip = $this->faker->ipv4();
 
         return [
-            'user_id' => (string) Str::uuid(),
+            'visitor_id' => null,   // will be filled by ->for(Visitor::factory())
+            'tracking_session_id' => null,   // will be filled by ->for(TrackingSession::factory())
             'event_name' => $this->faker->randomElement($eventTypes),
             'url' => $this->faker->url(),
             'referrer' => $this->faker->boolean(40) ? $this->faker->url() : null,
@@ -62,8 +52,8 @@ class EventFactory extends Factory
             'utm_medium' => $utm_medium,
             'utm_campaign' => $utm_campaign,
             'query_strings' => $queryStrings,
-            'ip_address' => $ip,
-            'user_agent' => $userAgent,
+            'ip_address' => $this->faker->ipv4(),
+            'user_agent' => $this->faker->userAgent(),
             'device' => $this->faker->randomElement(['Desktop', 'Mobile', 'Tablet']),
             'browser' => $this->faker->randomElement(['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera']),
             'os' => $this->faker->randomElement(['Windows', 'macOS', 'Linux', 'Android', 'iOS']),

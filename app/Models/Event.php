@@ -10,7 +10,8 @@ class Event extends Model
     
     use HasFactory;
     protected $fillable = [
-        'user_id',
+        'visitor_id',
+        'tracking_session_id',
         'event_name',
         'url',
         'referrer',
@@ -32,4 +33,36 @@ class Event extends Model
         'query_strings' => 'array',
         'meta' => 'array',
     ];
+
+    public function visitor()
+    {
+        return $this->belongsTo(Visitor::class);
+    }
+
+    public function session()
+    {
+        return $this->belongsTo(TrackingSession::class);
+    }
+
+    public function scopeFromVisitor($query, $visitorId)
+    {
+        return $query->where('visitor_id', $visitorId);
+    }
+
+    public function scopeFromSession($query, $sessionId)
+    {
+        return $query->where('session_id', $sessionId);
+    }
+
+    public function scopeByEventName($query, $name)
+    {
+        return $query->where('event_name', $name);
+    }
+
+    public function trackingSession()
+    {
+        return $this->belongsTo(TrackingSession::class);
+    }
+
+
 }

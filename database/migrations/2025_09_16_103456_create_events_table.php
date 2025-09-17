@@ -9,7 +9,10 @@ return new class extends Migration {
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->uuid('user_id')->index(); // internal visitor identifier
+            $table->foreignId('visitor_id')->nullable()->constrained('visitors')->nullOnDelete()
+                ->index();
+            $table->foreignId('tracking_session_id')->nullable()->constrained('tracking_sessions')->cascadeOnDelete()
+                ->index();
             $table->string('event_name')->index();
             $table->string('url')->nullable();
             $table->string('referrer')->nullable();

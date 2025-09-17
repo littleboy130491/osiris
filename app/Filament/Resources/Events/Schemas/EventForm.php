@@ -4,7 +4,11 @@ namespace App\Filament\Resources\Events\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use App\Models\Visitor;
+use App\Models\TrackingSession;
 
 class EventForm
 {
@@ -12,27 +16,45 @@ class EventForm
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
-                    ->required(),
+                Select::make('visitor_id')
+                    ->label('Visitor')
+                    ->relationship('visitor', 'visitor_uuid')
+                    ->searchable()
+                    ->nullable(),
+
+                Select::make('tracking_session_id')
+                    ->label('Tracking Session')
+                    ->relationship('trackingSession', 'session_uuid')
+                    ->searchable()
+                    ->nullable(),
+
                 TextInput::make('event_name')
                     ->required(),
+
                 TextInput::make('url')
                     ->url(),
+
                 TextInput::make('referrer'),
+
                 TextInput::make('gclid'),
                 TextInput::make('fbclid'),
                 TextInput::make('utm_source'),
                 TextInput::make('utm_medium'),
                 TextInput::make('utm_campaign'),
-                Textarea::make('query_strings')
+
+                KeyValue::make('query_strings')
                     ->columnSpanFull(),
+
                 TextInput::make('ip_address'),
+
                 Textarea::make('user_agent')
                     ->columnSpanFull(),
+
                 TextInput::make('device'),
                 TextInput::make('browser'),
                 TextInput::make('os'),
-                Textarea::make('meta')
+
+                KeyValue::make('meta')
                     ->columnSpanFull(),
             ]);
     }

@@ -11,7 +11,8 @@ class EventInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('user_id'),
+                TextEntry::make('visitor.visitor_uuid'),
+                TextEntry::make('trackingSession.session_uuid'),
                 TextEntry::make('event_name'),
                 TextEntry::make('url')
                     ->placeholder('-'),
