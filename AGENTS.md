@@ -86,9 +86,24 @@ Filament provides CRUD operations and visualization for the tracking data.
 ## API Layer
 
 - **EventController**: Handles incoming event data via API.
-  - Endpoint: Likely `POST /api/events` in [routes/api.php](routes/api.php).
+  - Endpoint: `POST /api/events` in [routes/api.php](routes/api.php).
   - Functionality: Creates or updates visitors/sessions and logs events.
 - **File**: [app/Http/Controllers/Api/EventController.php](app/Http/Controllers/Api/EventController.php)
+### API Endpoint Details
+
+**POST /api/events**
+- Receives tracking data from frontend applications
+- Automatically creates/finds visitors and sessions
+- Supports attribution tracking (UTM, GCLID, FBCLID)
+- Returns visitor and session UUIDs for client-side storage
+
+**Request Parameters:**
+- `event` (required): Event type (page_view, click, form_submit, etc.)
+- `url`, `referrer`: Page tracking data
+- `visitor_uuid`, `session_uuid`: Existing identifiers (optional)
+- `gclid`, `fbclid`, `utm_*`: Attribution parameters
+- `query_strings`, `data`: Additional metadata
+
 
 ## Database Structure
 

@@ -84,6 +84,7 @@ class EventsRelationTable
                     ->dateTime()
                     ->sortable(),
             ])
+            ->defaultSort('created_at', direction: 'desc')
             ->filters([
                 TernaryFilter::make('Starred')
                     ->relationship('visitor', 'starred'),
