@@ -17,17 +17,9 @@ class TrackingSessionsTable
             ->columns([
                 TextColumn::make('session_uuid')
                     ->searchable(),
-                TextColumn::make('visitor_id')
-                    ->numeric()
+                TextColumn::make('visitor.visitor_uuid')
+                    ->url(fn($record) => route('filament.admin.resources.visitors.view', $record->visitor_id))
                     ->sortable(),
-                TextColumn::make('device')
-                    ->searchable(),
-                TextColumn::make('browser')
-                    ->searchable(),
-                TextColumn::make('os')
-                    ->searchable(),
-                TextColumn::make('ip_address')
-                    ->searchable(),
                 TextColumn::make('started_at')
                     ->dateTime()
                     ->sortable(),

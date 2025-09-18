@@ -15,7 +15,7 @@ class TrackingSessionForm
             ->components([
                 TextInput::make('session_uuid')
                     ->required(),
-                TextInput::make('visitor_id')
+                TextInput::make('visitor.visitor_uuid')
                     ->required()
                     ->numeric(),
                 TextInput::make('device'),
