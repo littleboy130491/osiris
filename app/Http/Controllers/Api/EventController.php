@@ -15,6 +15,16 @@ class EventController extends Controller
 {
     public function store(Request $request)
     {
+        $restrictDomain = config('osiris.restrict-domain');
+
+        if ($restrictDomain) {
+            $allowedDomains = config('osiris.allowed-domains');
+
+            if (!in_array($request->header('Origin'), $allowedDomains)) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
+        }
+       
         // Validate the incoming request
         $validator = Validator::make($request->all(), [
             'event' => 'required|string|max:255',
