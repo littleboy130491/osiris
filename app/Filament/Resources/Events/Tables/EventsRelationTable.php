@@ -176,8 +176,10 @@ class EventsRelationTable
                     ->form([
                         // Domain selector
                         Select::make('domain')
-                            ->options(function () {
-                                return \App\Models\Event::query()
+                            ->options(function ($livewire) {
+                                 // Get the records currently in the table query
+                                $records = $livewire->getTableRecords();
+                                return $records
                                     ->pluck('url')
                                     ->map(function ($url) {
                                         if (empty($url)) {
@@ -199,8 +201,10 @@ class EventsRelationTable
 
                         // Page path selector (without query string)
                         Select::make('page_path')
-                            ->options(function () {
-                                return \App\Models\Event::query()
+                            ->options(function ($livewire) {
+                                 // Get the records currently in the table query
+                                $records = $livewire->getTableRecords();
+                                return $records
                                     ->pluck('url')
                                     ->map(function ($url) {
                                         if (empty($url)) {
