@@ -1,61 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Osiris Website Tracking System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based application for monitoring and logging website visitor activity. Osiris captures visitor information, session details, and specific events triggered by users, providing comprehensive analytics through a Filament admin interface.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Visitor Tracking**: Identify and track unique website visitors using IP addresses and user agents
+- **Session Management**: Monitor individual browsing sessions with start/end times and duration
+- **Event Logging**: Record specific user actions such as page views, clicks, and form submissions
+- **Attribution Tracking**: Capture UTM parameters, Google Click IDs (gclid), and Facebook Click IDs (fbclid)
+- **Admin Dashboard**: Beautiful Filament-based interface for viewing and managing tracked data
+- **API Integration**: RESTful API endpoints for receiving tracking data from frontend applications
+- **GDPR Compliant**: Designed with privacy regulations in mind
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2 or higher
+- Laravel Framework 12.0 or higher
+- Filament 4.0 or higher
+- Jenssegers Agent 2.6 or higher
+- Laravel Sanctum 4.0 or higher
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone or download the Osiris tracking application:
+   ```bash
+   git clone https://your-repository-url/osiris.git
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. Install dependencies via composer:
+   ```bash
+   composer install
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Configure your environment variables in `.env`:
+   ```bash
+   # Generate application key
+   php artisan key:generate
+   
+   # Configure database settings
+   # DB_CONNECTION, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+   
+   # Set your CRM API token
+   CRM_API_TOKEN=your-secret-token
+   
+   # Optionally restrict domains (set to true to enable domain restriction)
+   RESTRICT_DOMAIN=false
+   # If RESTRICT_DOMAIN=true, also set ALLOWED_DOMAINS in config/osiris.php
+   ```
 
-## Laravel Sponsors
+4. Run the migrations:
+   ```bash
+   php artisan migrate
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. Start the Laravel development server:
+   ```bash
+   php artisan serve
+   ```
 
-### Premium Partners
+## Integration
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Manual Implementation
 
-## Contributing
+Send data to the API endpoint:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```javascript
+// Send tracking data using XMLHttpRequest
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'https://your-domain.com/api/events', true);
+xhr.setRequestHeader('Content-Type', 'application/json');
+xhr.setRequestHeader('X-CRM-TOKEN', 'your-api-token');
 
-## Code of Conduct
+var payload = {
+  event: 'page_view', // Required
+  url: window.location.href,
+  referrer: document.referrer,
+  visitor_uuid: 'unique-visitor-id', // Optional, will be generated if not provided
+  session_uuid: 'session-id', // Optional, will be generated if not provided
+  query_strings: { // UTM parameters and click IDs
+    utm_source: 'google',
+    utm_medium: 'cpc',
+    gclid: 'google-click-id'
+  },
+  data: { // Additional event data
+    value: 99.99,
+    currency: 'USD'
+  }
+};
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+xhr.send(JSON.stringify(payload));
+```
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Documentation
+
+### Endpoint
+
+`POST /api/events`
+
+### Headers
+
+- `X-CRM-TOKEN`: Your configured CRM API token (required)
+
+### Parameters
+
+- `event` (required): Event type (page_view, click, form_submit, etc.)
+- `url`, `referrer`: Page tracking data
+- `visitor_uuid`, `session_uuid`: Existing identifiers (optional)
+- `visitor_name`, `visitor_email`, `visitor_phone`: Visitor contact information (optional)
+- `query_strings`: Object containing URL parameters for attribution tracking (optional)
+- `data`: Additional event metadata (optional)
+
+### Query String Attribution Parameters
+
+These parameters are automatically extracted from the `query_strings` object:
+
+- `gclid`: Google Click ID
+- `fbclid`: Facebook Click ID
+- `utm_source`: UTM source parameter
+- `utm_medium`: UTM medium parameter
+- `utm_campaign`: UTM campaign parameter
+- `utm_content`: UTM content parameter
+- `utm_term`: UTM term parameter
+
+### Response
+
+The API returns visitor and session UUIDs for client-side storage:
+
+```json
+{
+  "success": true,
+  "event_id": 123,
+  "visitor_uuid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx",
+  "session_uuid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+}
+```
+
+## Configuration
+
+The system can be configured through `config/osiris.php`:
+
+- `crm-api-token`: The token required for API authentication (set via CRM_API_TOKEN env variable)
+- `restrict_domain`: Boolean to enable domain restriction (set via RESTRICT_DOMAIN env variable)
+- `allowed-domains`: Array of allowed domains when restriction is enabled (empty by default)
+
+Example configuration:
+```php
+return [
+    'crm-api-token' => env('CRM_API_TOKEN', 'your-secret-token'),
+    'restrict_domain' => env('RESTRICT_DOMAIN', false),
+    'allowed-domains' => [
+        'http://example.com',
+        'https://example.com'
+    ],
+];
+```
+
+## Admin Interface
+
+Access the Filament admin panel to view analytics data:
+
+1. **Events**: View, create, edit, and delete event records
+2. **Visitors**: Manage visitor information and related events
+3. **Tracking Sessions**: Monitor browsing sessions and associated activities
+
+The panel is configured in `app/Providers/Filament/AdminPanelProvider.php`.
+
+## Development
+
+### Factories and Seeders
+
+For testing and development, use the provided factories:
+- `EventFactory.php`
+- `VisitorFactory.php` 
+- `TrackingSessionFactory.php`
+
+And seeders:
+- `EventSeeder.php`
+- `VisitorSeeder.php`
+- `DatabaseSeeder.php`
+
+### Testing
+
+Run tests with PestPHP:
+
+```bash
+./vendor/bin/pest
+```
+
+## Best Practices
+
+1. Ensure GDPR compliance for visitor data
+2. Index frequently queried database fields (IP addresses, timestamps)
+3. Use queue workers for high-volume event logging to prevent performance issues
+4. Secure your CRM API token and never expose it in client-side code
+5. Regularly backup your tracking data
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Osiris Tracker is open-source software licensed under the MIT license.
