@@ -173,7 +173,7 @@ class EventsRelationTable
                 // Domain & Page Path
 
                 Filter::make('domain_path')
-                    ->form([
+                    ->schema([
                         // Domain selector
                         Select::make('domain')
                             ->options(function ($livewire) {
@@ -204,7 +204,6 @@ class EventsRelationTable
                             ->options(function ($livewire) {
                                  // Get the records currently in the table query
                                 $records = $livewire->getTableRecords();
-                                dd($records);
                                 return $records
                                     ->pluck('url')
                                     ->map(function ($url) {
@@ -244,7 +243,7 @@ class EventsRelationTable
 
                 // Date range filter (safe)
                 Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         \Filament\Forms\Components\DatePicker::make('from'),
                         \Filament\Forms\Components\DatePicker::make('until'),
                     ])
