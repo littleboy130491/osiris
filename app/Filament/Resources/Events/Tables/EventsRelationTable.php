@@ -204,6 +204,7 @@ class EventsRelationTable
                             ->options(function ($livewire) {
                                  // Get the records currently in the table query
                                 $records = $livewire->getTableRecords();
+                                dd($records);
                                 return $records
                                     ->pluck('url')
                                     ->map(function ($url) {
