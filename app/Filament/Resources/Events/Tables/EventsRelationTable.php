@@ -47,10 +47,12 @@ class EventsRelationTable
 
                 TextColumn::make('url')
                     ->searchable()
+                    ->url(fn($record) => $record->url)
                     ->limit(50),
 
                 TextColumn::make('referrer')
                     ->searchable()
+                    ->url(fn($record) => $record->referrer)
                     ->limit(50),
 
                 TextColumn::make('gclid')
