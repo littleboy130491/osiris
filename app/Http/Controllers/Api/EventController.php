@@ -29,8 +29,8 @@ class EventController extends Controller
             'event' => 'required|string|max:255',
             'url' => 'nullable|url',
             'referrer' => 'nullable|string|max:2000', // Changed from url to string (referrer can be invalid URL)
-            'visitor_uuid' => 'nullable|uuid',
-            'session_uuid' => 'nullable|uuid',
+            'visitor_uuid' => 'nullable|uuid|string|max:255',
+            'session_uuid' => 'nullable|uuid|string|max:255',
             'visitor_name' => 'nullable|string|max:255',    // Added these
             'visitor_email' => 'nullable|email|max:255',    // Added these  
             'visitor_phone' => 'nullable|string|max:50',    // Added these
