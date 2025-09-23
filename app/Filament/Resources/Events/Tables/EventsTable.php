@@ -30,12 +30,14 @@ class EventsTable
                     ->sortable(),
                 TextColumn::make('event_name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('url')
                     ->searchable()
                     ->url(fn($record) => $record->url)
-                    ->limit(50),
+                    ->limit(50)
+                    ->toggleable(),
 
                 TextColumn::make('referrer')
                     ->searchable()
@@ -46,46 +48,56 @@ class EventsTable
                     ->label('Visitor')
                     ->url(fn($record) => route('filament.admin.resources.visitors.view', $record->visitor_id))
                     ->searchable()
+                    ->toggleable()
                     ->sortable(),
 
                 TextColumn::make('trackingSession.session_uuid')
                     ->label('Session')
                     ->url(fn($record) => route('filament.admin.resources.tracking-sessions.view', $record->tracking_session_id))
                     ->searchable()
+                    ->toggleable()
                     ->sortable(),
 
                 ToggleColumn::make('visitor.starred')
                     ->label('Starred')
+                    ->toggleable()
                     ->sortable(),
 
-          
-
                 TextColumn::make('gclid')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('fbclid')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('utm_source')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('utm_medium')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('utm_campaign')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('ip_address')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('device')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('browser')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('os')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 
             ])
