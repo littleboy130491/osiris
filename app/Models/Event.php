@@ -32,6 +32,8 @@ class Event extends Model
     protected $casts = [
         'query_strings' => 'array',
         'meta' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function visitor()

@@ -30,4 +30,14 @@ class TrackingSession extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    protected function casts(): array
+    {
+        return [
+            'started_at' => 'datetime',
+            'ended_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 }

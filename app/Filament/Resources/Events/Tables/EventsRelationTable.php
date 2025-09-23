@@ -17,6 +17,7 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Forms\Components\TextInput;
 use Filament\Actions\CreateAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class EventsRelationTable
 {
@@ -98,8 +99,8 @@ class EventsRelationTable
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ? $state->format('Y-m-d H:i:s') : null),
             ])
             ->defaultSort('created_at', direction: 'desc')
             ->filters([
@@ -278,6 +279,7 @@ class EventsRelationTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make(),
                 ]),
             ])
             ->headerActions([

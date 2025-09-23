@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Forms\Components\TextInput;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class EventsTable
 {
@@ -26,8 +27,8 @@ class EventsTable
             ->columns([
                 TextColumn::make('created_at')
                     ->label('Date')
-                    ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ? $state->format('Y-m-d H:i:s') : null),
                 TextColumn::make('event_name')
                     ->searchable()
                     ->sortable()
@@ -98,7 +99,6 @@ class EventsTable
                 TextColumn::make('os')
                     ->searchable()
                     ->toggleable(),
-
                 
             ])
             ->defaultSort('created_at', direction: 'desc')
@@ -274,6 +274,7 @@ class EventsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make(),
                 ]),
             ]);
     }

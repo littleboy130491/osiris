@@ -27,4 +27,12 @@ class Visitor extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 }
