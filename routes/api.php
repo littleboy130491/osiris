@@ -9,5 +9,4 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/events', [EventController::class, 'store'])
-    ->middleware(VerifyApiToken::class);
+Route::post('/events', [EventController::class, 'store']);
