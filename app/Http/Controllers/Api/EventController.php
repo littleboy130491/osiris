@@ -151,14 +151,28 @@ class EventController extends Controller
      */
     private function createEvent(Request $request, Visitor $visitor, TrackingSession $session, Agent $agent): Event
     {
+        // Get the URL from request & referrer
+        $url = request('url');
+        $referrer = request('referrer');
+
+        // Truncate if too long
+        if ($url && strlen($url) > 255) {
+            $url = substr($url, 0, 255);
+        }
+
+        if ($referrer && strlen($referrer) > 255) {
+            $referrer = substr($referrer, 0, 255);
+        }
+
+
         $queryStrings = $request->input('query_strings', []);
 
         return Event::create([
             'visitor_id' => $visitor->id,
             'tracking_session_id' => $session->id,
             'event_name' => $request->input('event'),
-            'url' => $request->input('url'),
-            'referrer' => $request->input('referrer'),
+            'url' => $url,
+            'referrer' => $referrer,
 
             // Attribution (auto-extracted) - Added null coalescing for safety
             'gclid' => $queryStrings['gclid'] ?? null,
