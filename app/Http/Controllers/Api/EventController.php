@@ -10,6 +10,7 @@ use App\Models\TrackingSession;
 use Jenssegers\Agent\Agent;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -24,16 +25,15 @@ class EventController extends Controller
             }
         }
 
-        // Updated validation to match what JS sends
         $validator = Validator::make($request->all(), [
             'event' => 'required|string|max:255',
             'url' => 'nullable|url',
-            'referrer' => 'nullable|string|max:2000', // Changed from url to string (referrer can be invalid URL)
+            'referrer' => 'nullable|string|max:2000',
             'visitor_uuid' => 'nullable|uuid|string|max:255',
             'session_uuid' => 'nullable|uuid|string|max:255',
-            'visitor_name' => 'nullable|string|max:255',    // Added these
-            'visitor_email' => 'nullable|email|max:255',    // Added these  
-            'visitor_phone' => 'nullable|string|max:50',    // Added these
+            'visitor_name' => 'nullable|string|max:255',
+            'visitor_email' => 'nullable|email|max:255',
+            'visitor_phone' => 'nullable|string|max:50',
             'query_strings' => 'nullable|array',
             'data' => 'nullable|array',
         ]);
@@ -81,69 +81,68 @@ class EventController extends Controller
     }
 
     /**
-     * Find or create a visitor
+     * Find or create a visitor (FIXED - prevents race condition)
      */
     private function findOrCreateVisitor(Request $request): Visitor
     {
-        $visitorUuid = $request->input('visitor_uuid');
+        $visitorUuid = $request->input('visitor_uuid') ?: (string) Str::uuid();
 
-        if ($visitorUuid) {
-            $visitor = Visitor::where('visitor_uuid', $visitorUuid)->first();
-            if ($visitor) {
-                // Update visitor info if provided
-                if ($request->filled('visitor_name') || $request->filled('visitor_email') || $request->filled('visitor_phone')) {
-                    $visitor->update([
-                        'name' => $request->input('visitor_name', $visitor->name),
-                        'email' => $request->input('visitor_email', $visitor->email),
-                        'phone' => $request->input('visitor_phone', $visitor->phone),
-                    ]);
-                }
-                return $visitor;
+        // Use firstOrCreate to prevent race conditions
+        $visitor = Visitor::firstOrCreate(
+            ['visitor_uuid' => $visitorUuid],
+            [
+                'name' => $request->input('visitor_name'),
+                'email' => $request->input('visitor_email'),
+                'phone' => $request->input('visitor_phone'),
+            ]
+        );
+
+        // Update visitor info if they already existed and new data is provided
+        if (!$visitor->wasRecentlyCreated) {
+            $updateData = [];
+
+            if ($request->filled('visitor_name') && $visitor->name !== $request->input('visitor_name')) {
+                $updateData['name'] = $request->input('visitor_name');
+            }
+            if ($request->filled('visitor_email') && $visitor->email !== $request->input('visitor_email')) {
+                $updateData['email'] = $request->input('visitor_email');
+            }
+            if ($request->filled('visitor_phone') && $visitor->phone !== $request->input('visitor_phone')) {
+                $updateData['phone'] = $request->input('visitor_phone');
+            }
+
+            if (!empty($updateData)) {
+                $visitor->update($updateData);
             }
         }
 
-        if (!$visitorUuid) {
-            $visitorUuid = (string) Str::uuid();
-        }
-
-        return Visitor::create([
-            'visitor_uuid' => $visitorUuid,
-            'name' => $request->input('visitor_name'),
-            'email' => $request->input('visitor_email'),
-            'phone' => $request->input('visitor_phone'),
-        ]);
+        return $visitor;
     }
 
     /**
-     * Find or create a session
+     * Find or create a session (FIXED - prevents race condition)
      */
     private function findOrCreateSession(Request $request, Visitor $visitor, Agent $agent): TrackingSession
     {
-        $sessionUuid = $request->input('session_uuid');
+        $sessionUuid = $request->input('session_uuid') ?: (string) Str::uuid();
 
-        if ($sessionUuid) {
-            $session = TrackingSession::where('session_uuid', $sessionUuid)
-                ->where('visitor_id', $visitor->id)
-                ->first();
-            if ($session) {
-                return $session;
-            }
-        }
+        // Use firstOrCreate to prevent race conditions
+        $session = TrackingSession::firstOrCreate(
+            [
+                'session_uuid' => $sessionUuid,
+                'visitor_id' => $visitor->id
+            ],
+            [
+                'device' => $agent->device(),
+                'browser' => $agent->browser(),
+                'os' => $agent->platform(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'started_at' => now(),
+            ]
+        );
 
-        if (!$sessionUuid) {
-            $sessionUuid = (string) Str::uuid();
-        }
-
-        return TrackingSession::create([
-            'session_uuid' => $sessionUuid,
-            'visitor_id' => $visitor->id,
-            'device' => $agent->device(),
-            'browser' => $agent->browser(),
-            'os' => $agent->platform(),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'started_at' => now(),
-        ]);
+        return $session;
     }
 
     /**
@@ -152,8 +151,8 @@ class EventController extends Controller
     private function createEvent(Request $request, Visitor $visitor, TrackingSession $session, Agent $agent): Event
     {
         // Get the URL from request & referrer
-        $url = request('url');
-        $referrer = request('referrer');
+        $url = $request->input('url');
+        $referrer = $request->input('referrer');
 
         // Truncate if too long
         if ($url && strlen($url) > 255) {
@@ -164,7 +163,6 @@ class EventController extends Controller
             $referrer = substr($referrer, 0, 255);
         }
 
-
         $queryStrings = $request->input('query_strings', []);
 
         return Event::create([
@@ -174,14 +172,14 @@ class EventController extends Controller
             'url' => $url,
             'referrer' => $referrer,
 
-            // Attribution (auto-extracted) - Added null coalescing for safety
+            // Attribution (auto-extracted)
             'gclid' => $queryStrings['gclid'] ?? null,
             'fbclid' => $queryStrings['fbclid'] ?? null,
             'utm_source' => $queryStrings['utm_source'] ?? null,
             'utm_medium' => $queryStrings['utm_medium'] ?? null,
             'utm_campaign' => $queryStrings['utm_campaign'] ?? null,
-            'utm_content' => $queryStrings['utm_content'] ?? null,  // Added this
-            'utm_term' => $queryStrings['utm_term'] ?? null,        // Added this
+            'utm_content' => $queryStrings['utm_content'] ?? null,
+            'utm_term' => $queryStrings['utm_term'] ?? null,
 
             // Raw query params dump
             'query_strings' => $queryStrings,
