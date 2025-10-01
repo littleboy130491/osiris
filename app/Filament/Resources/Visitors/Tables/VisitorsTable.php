@@ -8,15 +8,17 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class VisitorsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('firstEvent'))
             ->columns([
                 TextColumn::make('visitor_uuid')
                     ->searchable(),
@@ -32,6 +34,47 @@ class VisitorsTable
                 IconColumn::make('starred')
                     ->boolean()
                     ->sortable(),
+                TextColumn::make('firstEvent.referrer')
+                    ->label('Referrer')
+                    ->limit(50)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.gclid')
+                    ->label('GCLID')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.fbclid')
+                    ->label('FBCLID')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.utm_source')
+                    ->label('UTM Source')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.utm_medium')
+                    ->label('UTM Medium')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.utm_campaign')
+                    ->label('UTM Campaign')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.ip_address')
+                    ->label('IP Address')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.device')
+                    ->label('Device')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.browser')
+                    ->label('Browser')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('firstEvent.os')
+                    ->label('OS')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
