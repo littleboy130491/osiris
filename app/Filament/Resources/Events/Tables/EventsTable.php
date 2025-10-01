@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Forms\Components\TextInput;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class EventsTable
@@ -66,10 +65,12 @@ class EventsTable
 
                 TextColumn::make('gclid')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(),
 
                 TextColumn::make('fbclid')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(),
 
                 TextColumn::make('utm_source')

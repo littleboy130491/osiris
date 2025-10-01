@@ -42,10 +42,12 @@ class VisitorsTable
                 TextColumn::make('firstEvent.gclid')
                     ->label('GCLID')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.fbclid')
                     ->label('FBCLID')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.utm_source')
                     ->label('UTM Source')

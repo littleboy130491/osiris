@@ -64,10 +64,12 @@ class EventsRelationTable
 
                 TextColumn::make('gclid')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(),
 
                 TextColumn::make('fbclid')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(),
 
                 TextColumn::make('utm_source')
