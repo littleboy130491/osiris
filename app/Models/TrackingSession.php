@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TrackingSession extends Model
 {
@@ -29,6 +30,11 @@ class TrackingSession extends Model
     public function events()
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function firstEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)->oldestOfMany();
     }
 
     protected function casts(): array
