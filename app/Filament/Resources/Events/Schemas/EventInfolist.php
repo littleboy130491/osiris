@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Events\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Schemas\Schema;
 
 class EventInfolist
@@ -28,9 +29,11 @@ class EventInfolist
                     ->placeholder('-'),
                 TextEntry::make('utm_campaign')
                     ->placeholder('-'),
-                TextEntry::make('query_strings')
+                KeyValueEntry::make('query_strings')
                     ->placeholder('-')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->keyLabel('Parameter')
+                    ->valueLabel('Value'),
                 TextEntry::make('ip_address')
                     ->placeholder('-'),
                 TextEntry::make('user_agent')
@@ -54,3 +57,4 @@ class EventInfolist
             ]);
     }
 }
+
