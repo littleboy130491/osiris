@@ -19,8 +19,7 @@ class VisitorForm
                 TextInput::make('email')
                     ->label('Email address')
                     ->email(),
-                TextInput::make('phone')
-                    ->tel(),
+                TextInput::make('phone'),
                 Toggle::make('starred')
                     ->required(),
                 Textarea::make('notes')
