@@ -1,4 +1,4 @@
-// public/js/tracker.js
+﻿// public/js/tracker.js
 (function() {
     'use strict';
     
@@ -90,16 +90,26 @@
         return sessionId;
     }
 
-    // Get URL parameters
+    // Fix getUrlParams
     function getUrlParameters() {
         var params = {};
-        var searchParams = window.location.search.substring(1);
-        if (searchParams) {
-            var pairs = searchParams.split('&');
-            for (var i = 0; i < pairs.length; i++) {
-                var pair = pairs[i].split('=');
-                if (pair[0]) {
-                    params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        try {
+            var searchParams = new URLSearchParams(window.location.search);
+            searchParams.forEach(function(value, key) {
+                params[key] = value;
+            });
+        } catch (e) {
+            // Fallback for older browsers
+            var search = window.location.search.substring(1);
+            if (search) {
+                var pairs = search.split('&');
+                for (var i = 0; i < pairs.length; i++) {
+                    var pair = pairs[i].split('=');
+                    if (pair[0]) {
+                        var key = decodeURIComponent(pair[0]);
+                        var value = pair[1] ? decodeURIComponent(pair[1].replace(/\+/g, ' ')) : '';
+                        params[key] = value;
+                    }
                 }
             }
         }
