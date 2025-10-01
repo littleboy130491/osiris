@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Visitors\Tables;
 
+use App\Models\Visitor;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,7 +19,13 @@ class VisitorsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('firstEvent'))
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                if ($query->getModel() instanceof Visitor) {
+                    $query->with('firstEvent');
+                }
+
+                return $query;
+            })
             ->columns([
                 TextColumn::make('visitor_uuid')
                     ->searchable(),
@@ -42,12 +49,10 @@ class VisitorsTable
                 TextColumn::make('firstEvent.gclid')
                     ->label('GCLID')
                     ->searchable()
-                    ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.fbclid')
                     ->label('FBCLID')
                     ->searchable()
-                    ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.utm_source')
                     ->label('UTM Source')
