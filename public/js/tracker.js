@@ -3,7 +3,7 @@
     'use strict';
     
     // Configuration
-    var API_ENDPOINT = import.meta.env.VITE_APP_URL;
+    var API_ENDPOINT = 'https://osiris.imajiner.id';
     var DEBUG = false; // Set to true for development
     
     // Initialize global function
