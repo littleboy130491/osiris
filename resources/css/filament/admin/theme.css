@@ -7,3 +7,7 @@
 .fi-ta-content-ctn {
     @apply max-h-[80vh]; 
 }
+
+.fi-ta-table thead {
+   @apply sticky top-0 z-10;
+}
