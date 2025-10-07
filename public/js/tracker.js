@@ -3,7 +3,7 @@
     'use strict';
     
     // Configuration
-    var API_ENDPOINT = 'https://osiris.imajiner.id/js/tracker.js';
+    var API_ENDPOINT = 'https://osiris.imajiner.id/api/events';
     var DEBUG = false; // Set to true for development
     
     // Initialize global function
