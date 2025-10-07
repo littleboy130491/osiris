@@ -3,7 +3,7 @@
     'use strict';
     
     // Configuration
-    var API_ENDPOINT = 'https://osiris.imajiner.id/api/events'; // Your Laravel route
+    var API_ENDPOINT = import.meta.env.VITE_API_URL;
     var DEBUG = false; // Set to true for development
     
     // Initialize global function
