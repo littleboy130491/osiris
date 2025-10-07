@@ -5,5 +5,5 @@
 
 
 .fi-ta-content-ctn {
-  max-height: 80vh; 
+    @apply max-h-[80vh]; 
 }
