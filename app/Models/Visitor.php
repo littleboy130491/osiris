@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Visitor extends Model
 {
@@ -32,6 +33,11 @@ class Visitor extends Model
     public function firstEvent(): HasOne
     {
         return $this->hasOne(Event::class)->oldestOfMany();
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
     protected function casts(): array

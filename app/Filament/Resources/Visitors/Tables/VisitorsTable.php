@@ -3,13 +3,12 @@
 namespace App\Filament\Resources\Visitors\Tables;
 
 use App\Models\Visitor;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use App\Models\Tag;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -21,7 +20,7 @@ class VisitorsTable
         return $table
             ->modifyQueryUsing(function (Builder $query): Builder {
                 if ($query->getModel() instanceof Visitor) {
-                    $query->with('firstEvent');
+                    $query->with('firstEvent', 'tags');
                 }
 
                 return $query;
@@ -41,6 +40,8 @@ class VisitorsTable
                 IconColumn::make('starred')
                     ->boolean()
                     ->sortable(),
+                TagsColumn::make('tags.name')
+                    ->label('Tags'),
                 TextColumn::make('firstEvent.referrer')
                     ->label('Referrer')
                     ->limit(50)
@@ -93,16 +94,10 @@ class VisitorsTable
             ])
             ->filters([
                 TernaryFilter::make('starred'),
-            ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ExportBulkAction::make(),
-                ]),
+                SelectFilter::make('tag')
+                    ->relationship('tags', 'name')
+                    ->searchable()
+                    ->preload(),
             ]);
     }
 }

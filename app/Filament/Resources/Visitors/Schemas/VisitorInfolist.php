@@ -22,6 +22,11 @@ class VisitorInfolist
                     ->placeholder('-'),
                 IconEntry::make('starred')
                     ->boolean(),
+                TextEntry::make('tags.name')
+                    ->label('Tags')
+                    ->badge()
+                    ->color(fn ($record) => $record->tags->pluck('color')->first() ?? 'primary')
+                    ->separator(', '),
                 TextEntry::make('notes')
                     ->placeholder('-')
                     ->columnSpanFull(),
