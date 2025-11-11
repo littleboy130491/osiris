@@ -101,6 +101,9 @@ class VisitorsTable
                     ->relationship('tags', 'name')
                     ->searchable()
                     ->preload(),
+            ])
+            ->bulkActions([
+                ExportBulkAction::make()
             ]);
     }
 }
