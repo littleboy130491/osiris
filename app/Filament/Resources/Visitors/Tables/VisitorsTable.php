@@ -49,10 +49,12 @@ class VisitorsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.gclid')
                     ->label('GCLID')
+                    ->copyable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.fbclid')
                     ->label('FBCLID')
+                    ->copyable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.utm_source')
@@ -69,6 +71,7 @@ class VisitorsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.ip_address')
                     ->label('IP Address')
+                    ->copyable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('firstEvent.device')

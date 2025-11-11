@@ -87,6 +87,7 @@ class EventsTable
 
                 TextColumn::make('ip_address')
                     ->searchable()
+                    ->copyable()
                     ->toggleable(),
 
                 TextColumn::make('device')
