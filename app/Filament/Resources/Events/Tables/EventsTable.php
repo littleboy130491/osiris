@@ -231,7 +231,8 @@ class EventsTable
                                     ->values()
                                     ->mapWithKeys(fn($p) => [$p => $p])
                                     ->toArray();
-                            }),
+                            })
+                             ->searchable(),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         if (!empty($data['domain'])) {
