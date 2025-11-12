@@ -42,7 +42,7 @@ class VisitorsTable
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('tags.name')
-                    ->label('Tags')
+                    ->label(fn($record) => $record->tags->first()->color)
                     ->badge()
                     ->color(function ($state, $record) {
                         return 'success';
