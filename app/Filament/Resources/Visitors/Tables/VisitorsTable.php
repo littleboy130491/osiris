@@ -30,13 +30,16 @@ class VisitorsTable
                     ->searchable(),
                 TextColumn::make('name')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable(),
                 IconColumn::make('starred')
                     ->boolean()
                     ->sortable(),
@@ -95,6 +98,7 @@ class VisitorsTable
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(fn ($state) => $state ? $state->format('Y-m-d H:i:s') : null),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 TernaryFilter::make('starred'),
                 SelectFilter::make('tag')
