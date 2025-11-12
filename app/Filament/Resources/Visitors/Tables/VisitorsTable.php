@@ -45,6 +45,7 @@ class VisitorsTable
                     ->label('Tags')
                     ->badge()
                     ->color(function ($state, $record) {
+                        return 'success';
                         // Look for the color record from tag
                         if (is_array($state)) {
                             // For multiple tags, return first tag's color
