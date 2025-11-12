@@ -43,6 +43,7 @@ class VisitorsTable
                     ->sortable(),
                 TextColumn::make('tags.name')
                     ->label('Tags')
+                    ->badge()
                     ->color(function ($state, $record) {
                         // Look for the color record from tag
                         if (is_array($state)) {
