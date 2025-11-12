@@ -32,9 +32,17 @@ class VisitorForm
                         TextInput::make('name')
                             ->required()
                             ->unique(),
-                        TextInput::make('color')
-                            ->default('#3B82F6')
-                            ->label('Color (hex)'),
+                        Select::make('color')
+                            ->required()
+                            ->default('primary')
+                            ->options([
+                                'primary' => 'Primary (Amber)',
+                                'success' => 'Success (Green)',
+                                'warning' => 'Warning (Amber)',
+                                'danger' => 'Danger (Red)',
+                                'info' => 'Info (Blue)',
+                                'gray' => 'Gray (Zinc)',
+                            ]),
                     ])
                     ->createOptionUsing(function (array $data) {
                         $tag = \App\Models\Tag::create($data);

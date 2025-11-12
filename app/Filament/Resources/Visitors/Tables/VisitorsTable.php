@@ -42,17 +42,9 @@ class VisitorsTable
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('tags.name')
-                    ->label(fn($record) => $record->tags->first()->color)
+                    ->label('Tags')
                     ->badge()
                     ->color(function ($state, $record) {
-                        return 'success';
-                        // Look for the color record from tag
-                        if (is_array($state)) {
-                            // For multiple tags, return first tag's color
-                            return $record->tags->first()?->color ?? 'gray';
-                        }
-                        
-                        // Single tag case - find tag by name
                         $tag = $record->tags->where('name', $state)->first();
                         return $tag?->color ?? 'gray';
                     }),
