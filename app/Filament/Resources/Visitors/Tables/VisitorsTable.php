@@ -3,10 +3,8 @@
 namespace App\Filament\Resources\Visitors\Tables;
 
 use App\Models\Visitor;
-use App\Models\Tag;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -43,8 +41,19 @@ class VisitorsTable
                 IconColumn::make('starred')
                     ->boolean()
                     ->sortable(),
-                TagsColumn::make('tags.name')
-                    ->label('Tags'),
+                TextColumn::make('tags.name')
+                    ->label('Tags')
+                    ->color(function ($state, $record) {
+                        // Look for the color record from tag
+                        if (is_array($state)) {
+                            // For multiple tags, return first tag's color
+                            return $record->tags->first()?->color ?? 'gray';
+                        }
+                        
+                        // Single tag case - find tag by name
+                        $tag = $record->tags->where('name', $state)->first();
+                        return $tag?->color ?? 'gray';
+                    }),
                 TextColumn::make('firstEvent.referrer')
                     ->label('Referrer')
                     ->limit(50)
