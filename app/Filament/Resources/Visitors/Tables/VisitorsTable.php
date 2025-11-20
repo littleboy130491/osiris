@@ -45,6 +45,9 @@ class VisitorsTable
                     ->label('Tags')
                     ->badge()
                     ->color(function ($state, $record) {
+                        if (!$record) {
+                            return 'gray';
+                        }
                         $tag = $record->tags->where('name', $state)->first();
                         return $tag?->color ?? 'gray';
                     }),
@@ -95,11 +98,11 @@ class VisitorsTable
                 TextColumn::make('created_at')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->formatStateUsing(fn ($state) => $state ? $state->format('Y-m-d H:i:s') : null),
+                    ->formatStateUsing(fn($state) => $state ? $state->format('Y-m-d H:i:s') : null),
                 TextColumn::make('updated_at')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->formatStateUsing(fn ($state) => $state ? $state->format('Y-m-d H:i:s') : null),
+                    ->formatStateUsing(fn($state) => $state ? $state->format('Y-m-d H:i:s') : null),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

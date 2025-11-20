@@ -130,9 +130,9 @@ class EventController extends Controller
         $session = TrackingSession::firstOrCreate(
             [
                 'session_uuid' => $sessionUuid,
-                'visitor_id' => $visitor->id
             ],
             [
+                'visitor_id' => $visitor->id,
                 'device' => $agent->device(),
                 'browser' => $agent->browser(),
                 'os' => $agent->platform(),
