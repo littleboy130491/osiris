@@ -107,6 +107,26 @@ class VisitorsTable
             ->defaultSort('created_at', 'desc')
             ->filters([
                 TernaryFilter::make('starred'),
+                TernaryFilter::make('has_gclid')
+                    ->label('Has GCLID')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn(Builder $query) => $query->whereHas('firstGclidEvent', fn(Builder $query) => $query->whereNotNull('gclid')->where('gclid', '!=', '')),
+                        false: fn(Builder $query) => $query->whereDoesntHave('firstGclidEvent')
+                            ->orWhereHas('firstGclidEvent', fn(Builder $query) => $query->whereNull('gclid')->orWhere('gclid', '')),
+                        blank: fn(Builder $query) => $query,
+                    ),
+                TernaryFilter::make('has_fbclid')
+                    ->label('Has FBCLID')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn(Builder $query) => $query->whereHas('firstFbclidEvent', fn(Builder $query) => $query->whereNotNull('fbclid')->where('fbclid', '!=', '')),
+                        false: fn(Builder $query) => $query->whereDoesntHave('firstFbclidEvent')
+                            ->orWhereHas('firstFbclidEvent', fn(Builder $query) => $query->whereNull('fbclid')->orWhere('fbclid', '')),
+                        blank: fn(Builder $query) => $query,
+                    ),
                 SelectFilter::make('tag')
                     ->relationship('tags', 'name')
                     ->searchable()
