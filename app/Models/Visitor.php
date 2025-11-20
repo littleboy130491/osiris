@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Visitor extends Model
 {
@@ -39,14 +40,16 @@ class Visitor extends Model
     {
         return $this->hasOne(Event::class)
             ->whereNotNull('gclid')
-            ->oldestOfMany();
+            ->orderBy('created_at', 'asc')
+            ->limit(1);
     }
 
     public function firstFbclidEvent(): HasOne
     {
         return $this->hasOne(Event::class)
             ->whereNotNull('fbclid')
-            ->oldestOfMany();
+            ->orderBy('created_at', 'asc')
+            ->limit(1);
     }
 
     public function tags(): BelongsToMany
