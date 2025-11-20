@@ -18,7 +18,7 @@ class VisitorsTable
         return $table
             ->modifyQueryUsing(function (Builder $query): Builder {
                 if ($query->getModel() instanceof Visitor) {
-                    $query->with('firstEvent', 'tags');
+                    $query->with('firstEvent', 'firstGclidEvent', 'firstFbclidEvent', 'tags');
                 }
 
                 return $query;
@@ -56,12 +56,12 @@ class VisitorsTable
                     ->limit(50)
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('firstEvent.gclid')
+                TextColumn::make('firstGclidEvent.gclid')
                     ->label('GCLID')
                     ->copyable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('firstEvent.fbclid')
+                TextColumn::make('firstFbclidEvent.fbclid')
                     ->label('FBCLID')
                     ->copyable()
                     ->searchable()

@@ -35,6 +35,20 @@ class Visitor extends Model
         return $this->hasOne(Event::class)->oldestOfMany();
     }
 
+    public function firstGclidEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)
+            ->whereNotNull('gclid')
+            ->oldestOfMany();
+    }
+
+    public function firstFbclidEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)
+            ->whereNotNull('fbclid')
+            ->oldestOfMany();
+    }
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
