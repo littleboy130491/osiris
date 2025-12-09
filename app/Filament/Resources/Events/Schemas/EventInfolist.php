@@ -45,9 +45,11 @@ class EventInfolist
                     ->placeholder('-'),
                 TextEntry::make('os')
                     ->placeholder('-'),
-                TextEntry::make('meta')
+                KeyValueEntry::make('meta')
                     ->placeholder('-')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->keyLabel('Key')
+                    ->valueLabel('Value'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),
