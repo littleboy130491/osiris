@@ -17,6 +17,8 @@ This project uses the following key package versions (as defined in [composer.js
 - Filament: ^4.0
 - Jenssegers Agent: ^2.6 (used for parsing user agent information)
 - Laravel Sanctum: ^4.0 (for API authentication)
+- Laravel Passport: ^13.11 (OAuth server for the MCP endpoint)
+- Laravel MCP: ^1.0
 - Laravel Tinker: ^2.10.1
 
 Dev dependencies include:
@@ -111,7 +113,11 @@ A read-only [Laravel MCP](https://laravel.com/docs/mcp) server lets AI agents (C
 
 - Server: [app/Mcp/Servers/AnalyticsServer.php](app/Mcp/Servers/AnalyticsServer.php), tools in [app/Mcp/Tools](app/Mcp/Tools), routes in [routes/ai.php](routes/ai.php)
 - Tools: `get-analytics-summary`, `get-trends`, `search-visitors`, `get-visitor`, `search-events`, `list-tags`
-- HTTP: `POST /mcp`, protected by Sanctum bearer token (`php artisan mcp:token user@example.com`), throttled 60/min
+- HTTP: `POST /mcp`, protected by OAuth 2.1 via Laravel Passport (`auth:api`), throttled 60/min. Agents only need the URL:
+  they discover `/.well-known/oauth-*`, self-register at `/oauth/register`, send the user to `/oauth/authorize`
+  (Filament login + consent screen at [resources/views/mcp/authorize.blade.php](resources/views/mcp/authorize.blade.php)), then use `/oauth/token`.
+- Setup on a new server: `php artisan migrate` and `php artisan passport:keys` (or set `PASSPORT_PRIVATE_KEY`/`PASSPORT_PUBLIC_KEY`). `APP_URL` must be the public HTTPS URL.
+- Access tokens last 7 days, refresh tokens 90 days (see `AppServiceProvider`). Revoke by deleting rows in `oauth_access_tokens` / `oauth_clients`.
 - Local stdio: `php artisan mcp:start osiris`
 - Tests: [tests/Feature/McpAnalyticsServerTest.php](tests/Feature/McpAnalyticsServerTest.php)
 
