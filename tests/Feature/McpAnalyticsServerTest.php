@@ -7,6 +7,8 @@ use App\Mcp\Tools\GetVisitorTool;
 use App\Mcp\Tools\ListTagsTool;
 use App\Mcp\Tools\SearchEventsTool;
 use App\Mcp\Tools\SearchVisitorsTool;
+use App\Mcp\Tools\TagVisitorTool;
+use App\Mcp\Tools\UpdateVisitorTool;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\TrackingSession;
@@ -103,6 +105,50 @@ it('searches events', function () {
 
 it('lists tags', function () {
     AnalyticsServer::tool(ListTagsTool::class)->assertOk()->assertSee(['hot', '"visitors_count": 1']);
+});
+
+it('updates a visitor profile without touching other fields', function () {
+    AnalyticsServer::tool(UpdateVisitorTool::class, [
+        'visitor_uuid' => $this->anon->visitor_uuid,
+        'name' => 'Pak Irfan – Rexin',
+        'starred' => true,
+        'append_notes' => 'Proposal sent',
+    ])->assertOk()->assertSee(['Pak Irfan – Rexin', '"updated_fields"']);
+
+    $this->anon->refresh();
+    expect($this->anon->name)->toBe('Pak Irfan – Rexin')
+        ->and($this->anon->starred)->toBeTruthy()
+        ->and($this->anon->notes)->toBe('Proposal sent')
+        ->and($this->anon->email)->toBeNull();
+
+    AnalyticsServer::tool(UpdateVisitorTool::class, ['id' => $this->anon->id, 'append_notes' => 'Follow up'])->assertOk();
+    expect($this->anon->refresh()->notes)->toBe("Proposal sent\nFollow up");
+
+    AnalyticsServer::tool(UpdateVisitorTool::class, ['id' => $this->anon->id, 'email' => 'not-an-email'])->assertHasErrors(['Invalid email address.']);
+    AnalyticsServer::tool(UpdateVisitorTool::class, ['id' => $this->anon->id])->assertHasErrors();
+    AnalyticsServer::tool(UpdateVisitorTool::class, ['id' => 999999, 'starred' => true])->assertHasErrors(['Visitor not found.']);
+});
+
+it('adds and removes tags without deleting them', function () {
+    AnalyticsServer::tool(TagVisitorTool::class, ['id' => $this->lead->id, 'add' => ['proposal', 'HOT']])
+        ->assertOk()
+        ->assertSee(['"created_tags": [', '"proposal"']);
+
+    expect($this->lead->tags()->pluck('name')->sort()->values()->all())->toBe(['hot', 'proposal'])
+        ->and(Tag::count())->toBe(2);
+
+    AnalyticsServer::tool(TagVisitorTool::class, ['id' => $this->lead->id, 'remove' => ['hot']])->assertOk();
+
+    expect($this->lead->tags()->pluck('name')->all())->toBe(['proposal'])
+        ->and(Tag::where('name', 'hot')->exists())->toBeTrue();
+});
+
+it('exposes no delete tools', function () {
+    $names = collect((new ReflectionProperty(AnalyticsServer::class, 'tools'))->getDefaultValue())
+        ->map(fn ($tool) => app($tool)->name());
+
+    expect($names)->toContain('update-visitor', 'tag-visitor')
+        ->and($names->filter(fn ($n) => str_contains($n, 'delete')))->toBeEmpty();
 });
 
 it('rejects unauthenticated http requests and advertises oauth metadata', function () {

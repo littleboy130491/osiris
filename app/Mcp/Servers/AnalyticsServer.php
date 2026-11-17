@@ -8,16 +8,19 @@ use App\Mcp\Tools\GetVisitorTool;
 use App\Mcp\Tools\ListTagsTool;
 use App\Mcp\Tools\SearchEventsTool;
 use App\Mcp\Tools\SearchVisitorsTool;
+use App\Mcp\Tools\TagVisitorTool;
+use App\Mcp\Tools\UpdateVisitorTool;
 use Laravel\Mcp\Server;
 
 class AnalyticsServer extends Server
 {
     protected string $name = 'Osiris Analytics';
 
-    protected string $version = '1.0.0';
+    protected string $version = '1.1.0';
 
     protected string $instructions = <<<'MARKDOWN'
-        Read-only access to Osiris website visitor tracking data.
+        Access to Osiris website visitor tracking data. Tracking data (sessions, events) is read-only;
+        visitor profiles can be edited. Nothing can be deleted through this server.
 
         Data model: a Visitor (identified by visitor_uuid, optionally with name/email/phone, tags, starred flag)
         has many TrackingSessions (device/browser/OS/IP), and each session has many Events (event_name such as
@@ -28,6 +31,8 @@ class AnalyticsServer extends Server
         - Use `search-visitors` to find leads/visitors, then `get-visitor` for their full journey.
         - Use `search-events` for raw event-level questions.
         - `list-tags` shows available visitor tags.
+        - `update-visitor` edits a visitor's name, email, phone, notes and starred flag.
+        - `tag-visitor` adds/removes tags on a visitor (creates missing tags; never deletes tags).
 
         All dates are YYYY-MM-DD in the app timezone. Results are paginated with `limit`/`offset`; check `total`.
     MARKDOWN;
@@ -39,5 +44,7 @@ class AnalyticsServer extends Server
         GetVisitorTool::class,
         SearchEventsTool::class,
         ListTagsTool::class,
+        UpdateVisitorTool::class,
+        TagVisitorTool::class,
     ];
 }

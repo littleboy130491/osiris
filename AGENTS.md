@@ -109,10 +109,11 @@ Filament provides CRUD operations and visualization for the tracking data.
 
 ## MCP Server (AI agent access)
 
-A read-only [Laravel MCP](https://laravel.com/docs/mcp) server lets AI agents (Claude, Cursor, etc.) query the tracking data.
+A [Laravel MCP](https://laravel.com/docs/mcp) server lets AI agents (Claude, Cursor, etc.) query the tracking data and edit visitor profiles. Tracking data is read-only and nothing can be deleted.
 
 - Server: [app/Mcp/Servers/AnalyticsServer.php](app/Mcp/Servers/AnalyticsServer.php), tools in [app/Mcp/Tools](app/Mcp/Tools), routes in [routes/ai.php](routes/ai.php)
-- Tools: `get-analytics-summary`, `get-trends`, `search-visitors`, `get-visitor`, `search-events`, `list-tags`
+- Read tools: `get-analytics-summary`, `get-trends`, `search-visitors`, `get-visitor`, `search-events`, `list-tags`
+- Edit tools: `update-visitor` (name, email, phone, notes, starred) and `tag-visitor` (attach/detach tags, creates missing tags). Edits are logged as `MCP update-visitor` / `MCP tag-visitor`.
 - HTTP: `POST /mcp`, protected by OAuth 2.1 via Laravel Passport (`auth:api`), throttled 60/min. Agents only need the URL:
   they discover `/.well-known/oauth-*`, self-register at `/oauth/register`, send the user to `/oauth/authorize`
   (Filament login + consent screen at [resources/views/mcp/authorize.blade.php](resources/views/mcp/authorize.blade.php)), then use `/oauth/token`.
