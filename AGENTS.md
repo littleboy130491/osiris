@@ -105,6 +105,16 @@ Filament provides CRUD operations and visualization for the tracking data.
 - `query_strings`, `data`: Additional metadata
 
 
+## MCP Server (AI agent access)
+
+A read-only [Laravel MCP](https://laravel.com/docs/mcp) server lets AI agents (Claude, Cursor, etc.) query the tracking data.
+
+- Server: [app/Mcp/Servers/AnalyticsServer.php](app/Mcp/Servers/AnalyticsServer.php), tools in [app/Mcp/Tools](app/Mcp/Tools), routes in [routes/ai.php](routes/ai.php)
+- Tools: `get-analytics-summary`, `get-trends`, `search-visitors`, `get-visitor`, `search-events`, `list-tags`
+- HTTP: `POST /mcp`, protected by Sanctum bearer token (`php artisan mcp:token user@example.com`), throttled 60/min
+- Local stdio: `php artisan mcp:start osiris`
+- Tests: [tests/Feature/McpAnalyticsServerTest.php](tests/Feature/McpAnalyticsServerTest.php)
+
 ## Database Structure
 
 - **Migrations**:
